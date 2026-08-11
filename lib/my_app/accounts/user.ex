@@ -4,6 +4,8 @@ defmodule MyApp.Accounts.User do
 
   schema "users" do
     field :email, :string
+    field :name, :string
+    field :role, Ecto.Enum, values: [:admin, :member], default: :member
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime
@@ -128,5 +130,15 @@ defmodule MyApp.Accounts.User do
   def valid_password?(_, _) do
     Bcrypt.no_user_verify()
     false
+  end
+
+  def admin_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name, :email, :role])
+    |> validate_required([:name, :email, :role])
+    |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
+    |> validate_length(:email, max: 160)
+    |> unsafe_validate_unique(:email, MyApp.Repo)
+    |> unique_constraint(:email)
   end
 end
