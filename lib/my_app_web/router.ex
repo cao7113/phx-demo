@@ -54,9 +54,37 @@ defmodule MyAppWeb.Router do
       on_mount: [{MyAppWeb.UserAuth, :require_authenticated}] do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
+
+      ## books
+      live "/books", BookLive.Index, :index
+      live "/books/new", BookLive.Form, :new
+      live "/books/:id", BookLive.Show, :show
+      live "/books/:id/edit", BookLive.Form, :edit
     end
 
     post "/users/update-password", UserSessionController, :update_password
+  end
+
+  scope "/admin", MyAppWeb.Admin do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :require_admin,
+      on_mount: [
+        {MyAppWeb.UserAuth, :require_authenticated},
+        {MyAppWeb.Admin.AdminAuth, :require_admin}
+      ],
+      layout: {MyAppWeb.Layouts, :admin} do
+      live "/", DashboardLive, :index
+      live "/demo", DemoLive, :index
+
+      live "/users", UserLive.Index, :index
+      live "/users/new", UserLive.Form, :new
+      live "/users/:id/edit", UserLive.Form, :edit
+
+      live "/books", BookLive.Index, :index
+      live "/books/new", BookLive.Form, :new
+      live "/books/:id/edit", BookLive.Form, :edit
+    end
   end
 
   scope "/", MyAppWeb do

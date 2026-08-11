@@ -103,3 +103,51 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+
+/* Admin sidebar: resizable via the right-edge handle, collapsible via the
+   toggle button. Width and collapsed state are managed by the AdminSidebar
+   hook (assets/js/app.js) and persisted in localStorage. */
+#admin-sidebar {
+  transition: width 150ms ease;
+}
+
+/* no transition while dragging — it would fight the mouse position */
+#admin-sidebar.dragging,
+#admin-sidebar.dragging * {
+  transition: none;
+}
+
+/* collapsed: narrow icon rail (labels, footer and link text hidden) */
+#admin-sidebar.collapsed {
+  width: 4rem !important;
+}
+
+#admin-sidebar.collapsed .sidebar-label,
+#admin-sidebar.collapsed .sidebar-footer {
+  display: none;
+}
+
+#admin-sidebar.collapsed .sidebar-header {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#admin-sidebar.collapsed .admin-nav-link {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* toggle button shows the collapse chevron expanded, the expand one collapsed */
+#admin-sidebar .sidebar-expand-icon {
+  display: none;
+}
+
+#admin-sidebar.collapsed .sidebar-expand-icon {
+  display: inline-flex;
+}
+
+#admin-sidebar.collapsed .sidebar-collapse-icon {
+  display: none;
+}

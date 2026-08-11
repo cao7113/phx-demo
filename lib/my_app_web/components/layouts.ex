@@ -157,4 +157,90 @@ defmodule MyAppWeb.Layouts do
     </div>
     """
   end
+
+  @doc """
+  Admin layout
+  """
+  def admin(assigns) do
+    ~H"""
+    <div class="flex h-screen bg-base-200">
+      <!-- Sidebar: resizable via the right-edge handle, collapsible via the toggle
+           button; width and collapsed state persist in localStorage (AdminSidebar hook) -->
+      <aside
+        id="admin-sidebar"
+        phx-hook="AdminSidebar"
+        style="width: 16rem"
+        class="bg-base-100 border-r border-base-300 flex flex-col shrink-0 relative"
+      >
+        <div class="sidebar-header h-16 flex items-center justify-between px-4 font-bold text-lg border-b border-base-300">
+          <span class="sidebar-label">MyApp Admin</span>
+          <button
+            id="admin-sidebar-toggle"
+            type="button"
+            class="btn btn-ghost btn-sm"
+            aria-label="Toggle sidebar"
+          >
+            <span class="sidebar-collapse-icon"><.icon name="hero-chevron-double-left" class="size-4" /></span>
+            <span class="sidebar-expand-icon"><.icon name="hero-chevron-double-right" class="size-4" /></span>
+          </button>
+        </div>
+        <nav class="flex-1 px-3 py-4 space-y-1">
+          <.admin_nav_link navigate={~p"/admin"} icon="hero-chart-bar">Dashboard</.admin_nav_link>
+          <.admin_nav_link navigate={~p"/admin/demo"} icon="hero-users">Demo</.admin_nav_link>
+          <.admin_nav_link navigate={~p"/admin/users"} icon="hero-users">Users</.admin_nav_link>
+          <.admin_nav_link navigate={~p"/admin/books"} icon="hero-book-open">Books</.admin_nav_link>
+        </nav>
+        <div class="sidebar-footer p-4 border-t border-base-300 text-sm">
+          <.link
+            href={~p"/"}
+            class="flex items-center gap-1.5 text-base-content/60 hover:underline"
+          >
+            <.icon name="hero-arrow-left" class="size-4" />
+            Back to site
+          </.link>
+          <p class="font-medium truncate mt-2">{@current_scope.user.email}</p>
+          <.link
+            href={~p"/users/log-out"}
+            method="delete"
+            class="text-base-content/60 hover:underline"
+          >
+            Log out
+          </.link>
+        </div>
+        <div
+          id="admin-sidebar-handle"
+          class="absolute right-0 top-0 h-full w-1.5 cursor-col-resize bg-transparent hover:bg-primary/30"
+          title="Drag to resize"
+        ></div>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-16 bg-base-100 border-b border-base-300 flex items-center px-6">
+          <h1 class="text-xl font-semibold">{assigns[:page_title] || "Admin"}</h1>
+        </header>
+        <main class="flex-1 overflow-y-auto p-6">
+          <.flash_group flash={@flash} />
+          {@inner_content}
+        </main>
+      </div>
+    </div>
+    """
+  end
+
+  attr :navigate, :string, required: true
+  attr :icon, :string, required: true
+  slot :inner_block, required: true
+
+  defp admin_nav_link(assigns) do
+    ~H"""
+    <.link
+      navigate={@navigate}
+      class="admin-nav-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-base-content/80 hover:bg-base-200 hover:text-base-content transition-colors"
+    >
+      <.icon name={@icon} class="w-5 h-5 shrink-0" />
+      <span class="sidebar-label">{render_slot(@inner_block)}</span>
+    </.link>
+    """
+  end
 end

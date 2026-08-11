@@ -25,11 +25,70 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/my_app"
 import topbar from "../vendor/topbar"
 
+// Admin sidebar: resizable via drag handle, collapsible via toggle button.
+// Width and collapsed state persist in localStorage across navigations.
+const SIDEBAR_WIDTH_KEY = "phx:admin-sidebar:width"
+const SIDEBAR_COLLAPSED_KEY = "phx:admin-sidebar:collapsed"
+const SIDEBAR_DEFAULT_WIDTH = 256 // w-64 = 16rem
+const SIDEBAR_MIN_WIDTH = 64
+const SIDEBAR_MAX_WIDTH = 400
+
+const AdminSidebar = {
+  mounted() {
+    const savedWidth = parseInt(localStorage.getItem(SIDEBAR_WIDTH_KEY), 10)
+    this.el.style.width = `${savedWidth || SIDEBAR_DEFAULT_WIDTH}px`
+    if (localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "1") {
+      this.el.classList.add("collapsed")
+    }
+
+    this.el.querySelector("#admin-sidebar-toggle").addEventListener("click", e => {
+      e.preventDefault()
+      if (this.el.classList.contains("collapsed")) {
+        this.el.classList.remove("collapsed")
+        localStorage.setItem(SIDEBAR_COLLAPSED_KEY, "0")
+      } else {
+        this.el.classList.add("collapsed")
+        localStorage.setItem(SIDEBAR_COLLAPSED_KEY, "1")
+      }
+    })
+
+    this.el.querySelector("#admin-sidebar-handle").addEventListener("mousedown", e => {
+      e.preventDefault()
+      const startX = e.clientX
+      const startWidth = this.el.offsetWidth
+      document.body.style.userSelect = "none"
+      this.el.classList.add("dragging")
+
+      const onMove = ev => {
+        const width = Math.min(
+          Math.max(startWidth + ev.clientX - startX, SIDEBAR_MIN_WIDTH),
+          SIDEBAR_MAX_WIDTH,
+        )
+        this.el.style.width = `${width}px`
+        // dragging re-expands a collapsed sidebar at the dragged width
+        this.el.classList.remove("collapsed")
+      }
+
+      const onUp = () => {
+        document.removeEventListener("mousemove", onMove)
+        document.removeEventListener("mouseup", onUp)
+        document.body.style.userSelect = ""
+        this.el.classList.remove("dragging")
+        localStorage.setItem(SIDEBAR_WIDTH_KEY, String(this.el.offsetWidth))
+        localStorage.setItem(SIDEBAR_COLLAPSED_KEY, "0")
+      }
+
+      document.addEventListener("mousemove", onMove)
+      document.addEventListener("mouseup", onUp)
+    })
+  },
+}
+
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks},
+  hooks: {AdminSidebar, ...colocatedHooks},
 })
 
 // Show progress bar on live navigation and form submits
