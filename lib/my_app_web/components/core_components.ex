@@ -476,6 +476,13 @@ defmodule MyAppWeb.CoreComponents do
   end
 
   @doc """
+  Translates a Backpex interface message using gettext.
+  """
+  def translate_backpex({msg, opts}) do
+    Gettext.dgettext(MyAppWeb.Gettext, "backpex", msg, opts)
+  end
+
+  @doc """
   Translates an error message using gettext.
   """
   def translate_error({msg, opts}) do
