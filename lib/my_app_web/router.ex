@@ -97,6 +97,7 @@ defmodule MyAppWeb.Router do
 
     live_session :default, on_mount: Backpex.InitAssigns do
       live_resources "/posts", Live.PostLive
+      live_resources "/books", Live.BookLive
     end
   end
 
