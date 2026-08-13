@@ -195,8 +195,7 @@ defmodule MyAppWeb.Layouts do
             href={~p"/"}
             class="flex items-center gap-1.5 text-base-content/60 hover:underline"
           >
-            <.icon name="hero-arrow-left" class="size-4" />
-            Back to site
+            <.icon name="hero-arrow-left" class="size-4" /> Back to site
           </.link>
           <p class="font-medium truncate mt-2">{@current_scope.user.email}</p>
           <.link
@@ -211,7 +210,8 @@ defmodule MyAppWeb.Layouts do
           id="admin-sidebar-handle"
           class="absolute right-0 top-0 h-full w-1.5 cursor-col-resize bg-transparent hover:bg-primary/30"
           title="Drag to resize"
-        ></div>
+        >
+        </div>
       </aside>
 
       <!-- Main -->
@@ -243,4 +243,10 @@ defmodule MyAppWeb.Layouts do
     </.link>
     """
   end
+
+  attr :flash, :map, required: true, doc: "the map of flash messages"
+  attr :fluid?, :boolean, default: true, doc: "if the content uses full width"
+  attr :current_url, :string, required: true, doc: "the current url"
+  slot :inner_block, required: true
+  def backpex(assigns)
 end

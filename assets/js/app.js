@@ -24,6 +24,7 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/my_app"
 import topbar from "../vendor/topbar"
+import { Hooks as BackpexHooks } from 'backpex';
 
 // Admin sidebar: resizable via drag handle, collapsible via toggle button.
 // Width and collapsed state persist in localStorage across navigations.
@@ -88,7 +89,7 @@ const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {AdminSidebar, ...colocatedHooks},
+  hooks: {AdminSidebar, ...colocatedHooks, ...BackpexHooks},
 })
 
 // Show progress bar on live navigation and form submits

@@ -294,5 +294,4 @@ defmodule MyApp.Accounts do
       end
     end)
   end
-
 end

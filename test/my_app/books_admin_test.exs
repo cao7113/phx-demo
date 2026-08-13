@@ -18,7 +18,10 @@ defmodule MyApp.Books.AdminTest do
       # inserted_at is second-granularity, so pin distinct timestamps
       # to make the ordering deterministic
       book |> Ecto.Changeset.change(inserted_at: ~U[2024-01-01 00:00:00Z]) |> MyApp.Repo.update!()
-      other_book |> Ecto.Changeset.change(inserted_at: ~U[2024-01-02 00:00:00Z]) |> MyApp.Repo.update!()
+
+      other_book
+      |> Ecto.Changeset.change(inserted_at: ~U[2024-01-02 00:00:00Z])
+      |> MyApp.Repo.update!()
 
       assert %{entries: entries, total_pages: 1, total_count: 2} = Admin.paginate_books()
       assert Enum.map(entries, & &1.id) == [other_book.id, book.id]
@@ -61,7 +64,11 @@ defmodule MyApp.Books.AdminTest do
       owner = user_scope_fixture()
 
       assert {:ok, %Book{} = book} =
-               Admin.create_book(admin_scope, %{title: "some title", note: "some note", user_id: owner.user.id})
+               Admin.create_book(admin_scope, %{
+                 title: "some title",
+                 note: "some note",
+                 user_id: owner.user.id
+               })
 
       assert book.title == "some title"
       assert book.note == "some note"
@@ -81,7 +88,11 @@ defmodule MyApp.Books.AdminTest do
       Phoenix.PubSub.subscribe(MyApp.PubSub, "user:#{owner.user.id}:books")
 
       assert {:ok, %Book{} = book} =
-               Admin.create_book(admin_scope, %{title: "some title", note: "some note", user_id: owner.user.id})
+               Admin.create_book(admin_scope, %{
+                 title: "some title",
+                 note: "some note",
+                 user_id: owner.user.id
+               })
 
       assert_receive {:created, ^book}
     end
@@ -94,7 +105,10 @@ defmodule MyApp.Books.AdminTest do
       new_owner = user_scope_fixture()
 
       assert {:ok, %Book{} = updated} =
-               Admin.update_book(admin_scope, book, %{title: "updated", user_id: new_owner.user.id})
+               Admin.update_book(admin_scope, book, %{
+                 title: "updated",
+                 user_id: new_owner.user.id
+               })
 
       assert updated.title == "updated"
       assert updated.user_id == new_owner.user.id
