@@ -15,7 +15,10 @@ defmodule MyApp.Accounts.AdminTest do
       # inserted_at is second-granularity, so pin distinct timestamps
       # to make the ordering deterministic
       user |> Ecto.Changeset.change(inserted_at: ~U[2024-01-01 00:00:00Z]) |> MyApp.Repo.update!()
-      other_user |> Ecto.Changeset.change(inserted_at: ~U[2024-01-02 00:00:00Z]) |> MyApp.Repo.update!()
+
+      other_user
+      |> Ecto.Changeset.change(inserted_at: ~U[2024-01-02 00:00:00Z])
+      |> MyApp.Repo.update!()
 
       assert %{entries: entries, total_pages: 1, total_count: 2} = Admin.paginate_users()
       assert Enum.map(entries, & &1.id) == [other_user.id, user.id]
@@ -27,10 +30,18 @@ defmodule MyApp.Accounts.AdminTest do
       # user_fixture drops `name` (registration changeset only casts
       # email/password), so create users through the admin API here
       assert {:ok, _} =
-               Admin.create_user(admin_scope, %{name: "Alice", email: "alice@example.com", role: "member"})
+               Admin.create_user(admin_scope, %{
+                 name: "Alice",
+                 email: "alice@example.com",
+                 role: "member"
+               })
 
       assert {:ok, _} =
-               Admin.create_user(admin_scope, %{name: "Bobby", email: "bob@example.com", role: "member"})
+               Admin.create_user(admin_scope, %{
+                 name: "Bobby",
+                 email: "bob@example.com",
+                 role: "member"
+               })
 
       assert %{entries: [%{name: "Alice"}]} = Admin.paginate_users(search: "alice")
       assert %{entries: [%{name: "Bobby"}]} = Admin.paginate_users(search: "Bobby")
@@ -46,7 +57,11 @@ defmodule MyApp.Accounts.AdminTest do
 
       for name <- ["A", "B", "C"] do
         assert {:ok, _} =
-                 Admin.create_user(admin_scope, %{name: name, email: unique_user_email(), role: "member"})
+                 Admin.create_user(admin_scope, %{
+                   name: name,
+                   email: unique_user_email(),
+                   role: "member"
+                 })
       end
 
       assert %{entries: [%{name: "A"}, %{name: "B"}], total_pages: 2} =
@@ -62,7 +77,11 @@ defmodule MyApp.Accounts.AdminTest do
       admin_scope = user_scope_fixture()
 
       assert {:ok, %User{} = user} =
-               Admin.create_user(admin_scope, %{name: "Alice", email: unique_user_email(), role: "admin"})
+               Admin.create_user(admin_scope, %{
+                 name: "Alice",
+                 email: unique_user_email(),
+                 role: "admin"
+               })
 
       assert user.name == "Alice"
       assert user.role == :admin
@@ -120,7 +139,13 @@ defmodule MyApp.Accounts.AdminTest do
     test "counts users, admins and active today" do
       user_fixture()
       admin_scope = user_scope_fixture()
-      assert {:ok, %User{role: :admin}} = Admin.create_user(admin_scope, %{name: "Boss", email: unique_user_email(), role: "admin"})
+
+      assert {:ok, %User{role: :admin}} =
+               Admin.create_user(admin_scope, %{
+                 name: "Boss",
+                 email: unique_user_email(),
+                 role: "admin"
+               })
 
       assert Admin.count_users() >= 3
       assert Admin.count_admins() >= 1
@@ -135,7 +160,10 @@ defmodule MyApp.Accounts.AdminTest do
 
       # inserted_at is second-granularity, so pin distinct timestamps
       user |> Ecto.Changeset.change(inserted_at: ~U[2024-01-01 00:00:00Z]) |> MyApp.Repo.update!()
-      other_user |> Ecto.Changeset.change(inserted_at: ~U[2024-01-02 00:00:00Z]) |> MyApp.Repo.update!()
+
+      other_user
+      |> Ecto.Changeset.change(inserted_at: ~U[2024-01-02 00:00:00Z])
+      |> MyApp.Repo.update!()
 
       assert Enum.map(Admin.list_recent_users(limit: 1), & &1.id) == [other_user.id]
     end

@@ -2,6 +2,7 @@ defmodule MyAppWeb.Router do
   use MyAppWeb, :router
 
   import MyAppWeb.UserAuth
+  import Backpex.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -84,6 +85,19 @@ defmodule MyAppWeb.Router do
       live "/books", BookLive.Index, :index
       live "/books/new", BookLive.Form, :new
       live "/books/:id/edit", BookLive.Form, :edit
+    end
+  end
+
+  scope "/backpex", MyAppWeb do
+    pipe_through :browser
+
+    backpex_routes()
+
+    get "/", Backpex.RedirectController, :redirect_to_posts
+
+    live_session :default, on_mount: Backpex.InitAssigns do
+      live_resources "/posts", Live.PostLive
+      live_resources "/books", Live.BookLive
     end
   end
 
