@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.1 - 2026-09-19
+#### Miscellaneous Chores
+- upgrade db_ops and add bin/eval - (beb74ff) - Ryn Cao
+
+- - -
+
 ## v0.1.0 - 2026-09-19
 #### Features
 - mix phx.gen.auth Accounts User users --live - (1ea3ac8) - Ryn Cao
