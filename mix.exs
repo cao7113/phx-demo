@@ -1,10 +1,12 @@
 defmodule MyApp.MixProject do
   use Mix.Project
 
+  @vsn File.read!("VERSION") |> String.trim()
+
   def project do
     [
       app: :my_app,
-      version: "0.1.0",
+      version: @vsn,
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
