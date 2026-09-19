@@ -72,7 +72,10 @@ defmodule MyApp.MixProject do
       {:gettext, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+
+      # Database operations library
+      {:db_ops, "~> 0.2"}
     ]
   end
 
